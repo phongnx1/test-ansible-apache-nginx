@@ -1,0 +1,8 @@
+---
+
+- name: Copy config file to nginx load balancing server
+  hosts: local_nginx_balancer
+  remote_user: vagrant
+
+  roles:
+    - app.nginx_conf

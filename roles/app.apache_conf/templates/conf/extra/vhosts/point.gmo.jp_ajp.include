@@ -1,0 +1,99 @@
+
+    # [tokup] Exclude the static files from the proxy
+    ProxyPassMatch ^/consumer/.*(.gif|.png|.jpeg|.jpg|.html|.htm|.js|.css|.swf|.ico|.xml).* !
+    ProxyPassMatch ^/staff/.*(.gif|.png|.jpeg|.jpg|.html|.htm|.js|.css|.swf|.ico|.xml).* !
+    ProxyPassMatch ^/maintenance/.* !
+
+    # Skip Hearbeat From LB
+    ProxyPassMatch ^/lbalivecheck.html.* !
+    # Skip Hearbeat From cacti
+    ProxyPassMatch ^/server-status.* !
+    # Skip webmoney access to apatch cgi
+    ProxyPassMatch ^/cgi-bin/wm/shopfirst.cgi.* !
+    ProxyPassMatch ^/cgi-bin/wm/pagecon.cgi.* !
+
+    # Skip Request From toolbar
+    ProxyPassMatch ^/consumer/auth/toolbarLogin.do.* !
+
+    # [gmopoint] Tokup api
+    ProxyPassMatch ^/(consumer/app)/.*(.do).* balancer://consumer_app stickysession=PHPSESSID|sessionid nofailover=Off timeout=7 maxattempts=1
+    <Proxy balancer://consumer_app/>
+        BalancerMember http://192.168.222.212:80  retry=1 route=ap_front01 loadfactor=10
+        BalancerMember http://192.168.222.213:80  retry=1 route=ap_front02 loadfactor=10
+        BalancerMember http://192.168.222.214:80  retry=1 route=ap_front03 loadfactor=10
+        BalancerMember http://192.168.222.216:80  retry=1 route=ap_front04 loadfactor=10
+    </Proxy>
+
+    # [gmopoint] PHP Backyard
+    # Affitown API, Affiliate API, Game API
+    ProxyPassMatch ^/backyard(/webinterface/affiaccess|/affitown/reward|/game/|/affiliate/|/ad/|/sendmail/|/enquete/|/gmoid/|/payment/).* balancer://affitown timeout=7
+    <Proxy balancer://affitown/>
+        BalancerMember http://192.168.222.212:80  retry=1 route=ap_front01 loadfactor=10
+        BalancerMember http://192.168.222.213:80  retry=1 route=ap_front02 loadfactor=10
+        BalancerMember http://192.168.222.214:80  retry=1 route=ap_front03 loadfactor=10
+        BalancerMember http://192.168.222.216:80  retry=1 route=ap_front04 loadfactor=10
+    </Proxy>
+
+    # [tokup] Backyard
+    ProxyPassMatch ^/backyard/.* balancer://backyard timeout=7
+    <Proxy balancer://backyard/>
+        BalancerMember ajp://192.168.222.131:8009/ loadfactor=10  route=ap_backyard1
+        BalancerMember ajp://192.168.222.132:8009/ loadfactor=10  route=ap_backyard2
+        BalancerMember ajp://192.168.222.133:8009/ loadfactor=10  route=ap_backyard3
+        BalancerMember ajp://192.168.222.134:8009/ loadfactor=10  route=ap_backyard4
+    </Proxy>
+
+    # [tokup] Payment
+    ProxyPassMatch ^/consumer(/sp|/mobile)?/(payment|quickcharge)/.* balancer://payment stickysession=JSESSIONID|jsessionid timeout=7
+    <Proxy balancer://payment/>
+        BalancerMember ajp://192.168.222.131:8011/ loadfactor=100  route=ap_consumer1
+        BalancerMember ajp://192.168.222.132:8011/ loadfactor=3  route=ap_consumer2
+        BalancerMember ajp://192.168.222.133:8011/ loadfactor=2  route=ap_consumer3
+        BalancerMember ajp://192.168.222.134:8011/ loadfactor=1  route=ap_consumer4
+    </Proxy>
+
+    # [tokup] Payment
+    ProxyPassMatch ^/consumer/auth/(securityCheckPasswordComp|securityCheckPassNoComp).do?.* balancer://payment stickysession=JSESSIONID|jsessionid timeout=7
+    <Proxy balancer://payment/>
+        BalancerMember ajp://192.168.222.131:8011/ loadfactor=100  route=ap_consumer1
+        BalancerMember ajp://192.168.222.132:8011/ loadfactor=3  route=ap_consumer2
+        BalancerMember ajp://192.168.222.133:8011/ loadfactor=2  route=ap_consumer3
+        BalancerMember ajp://192.168.222.134:8011/ loadfactor=1  route=ap_consumer4
+    </Proxy>
+
+    # [tokup] RankSlot
+    ProxyPassMatch ^/consumer/game/(showRankSlotGameAction|startRankSlotGameAction).do?.* balancer://slot stickysession=JSESSIONID|jsessionid timeout=7
+    <Proxy balancer://slot/>
+        BalancerMember ajp://192.168.222.131:8011/ loadfactor=10  route=ap_consumer1
+        BalancerMember ajp://192.168.222.132:8011/ loadfactor=10  route=ap_consumer2
+        BalancerMember ajp://192.168.222.133:8011/ loadfactor=10  route=ap_consumer3
+        BalancerMember ajp://192.168.222.134:8011/ loadfactor=10  route=ap_consumer4
+    </Proxy>
+
+    # [tokup] Mailmagazine Redirect
+    ProxyPassMatch ^/consumer/DynaRedirect.do?.* balancer://polaris stickysession=JSESSIONID|jsessionid timeout=7
+    <Proxy balancer://polaris/>
+        BalancerMember ajp://192.168.222.131:8011/ loadfactor=10  route=ap_consumer1
+        BalancerMember ajp://192.168.222.132:8011/ loadfactor=10  route=ap_consumer2
+        BalancerMember ajp://192.168.222.133:8011/ loadfactor=10  route=ap_consumer3
+        BalancerMember ajp://192.168.222.134:8011/ loadfactor=10  route=ap_consumer4
+    </Proxy>
+
+    # Staff Tool
+    ProxyPassMatch ^/(staff)/.* balancer://staff stickysession=JSESSIONID|jsessionid nofailover=Off timeout=7 maxattempts=1
+    <Proxy balancer://staff/>
+        BalancerMember ajp://192.168.222.131:8010/ loadfactor=10  route=ap_staff1
+        BalancerMember ajp://192.168.222.132:8010/ loadfactor=10  route=ap_staff2
+        BalancerMember ajp://192.168.222.133:8010/ loadfactor=10  route=ap_staff3
+        BalancerMember ajp://192.168.222.134:8010/ loadfactor=10  route=ap_staff4
+    </Proxy>
+
+    # [gmopoint]Frontend
+    ProxyPassMatch ^/.* balancer://frontend stickysession=PHPSESSID nofailover=Off timeout=7 maxattempts=1
+    ProxyPreserveHost On
+    <Proxy balancer://frontend/>
+        BalancerMember http://192.168.222.212:80  retry=1 route=ap_front01 loadfactor=10
+        BalancerMember http://192.168.222.213:80  retry=1 route=ap_front02 loadfactor=10
+        BalancerMember http://192.168.222.214:80  retry=1 route=ap_front03 loadfactor=10
+        BalancerMember http://192.168.222.216:80  retry=1 route=ap_front04 loadfactor=10
+    </Proxy>

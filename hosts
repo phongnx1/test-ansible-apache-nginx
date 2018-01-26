@@ -1,0 +1,9 @@
+[local_nginx_balancer]
+192.168.33.51
+
+[local_nginx]
+192.168.33.52
+192.168.33.53
+
+[local_apache]
+192.168.33.54

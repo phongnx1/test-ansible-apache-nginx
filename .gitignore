@@ -1,0 +1,12 @@
+.vagrant/
+.vault_pass.txt
+ansible.cfg
+
+gmopoint-consumer/
+gmopoint/
+gmodoc/
+staff/
+docker/gmopoint/
+.idea/
+.DS_Store
+*.retry

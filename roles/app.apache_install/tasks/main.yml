@@ -1,0 +1,60 @@
+---
+- name: install yum packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - wget
+    - gcc
+    - openssl
+    - openssl-devel
+    - openldap-devel
+
+- name: download sourse
+  get_url:
+    url: "{{ apache_source_url }}{{apache_version}}.tar.gz"
+    dest: "{{ apache_source_dir }}"
+  become: yes
+
+- name: untar the httpd tar file
+  command: tar zxvf {{ apache_source_dir }}{{apache_version}}.tar.gz
+  args:
+    chdir: "{{ apache_source_dir }}"
+  become: yes
+
+- name: configure apache
+  shell: ./configure --prefix={{apache_install_dir}} \
+        --enable-so \
+        --enable-ssl=shared \
+        --enable-limitipconn=shared \
+        --enable-rewrite \
+        --enable-proxy \
+        --enable-headers \
+        --enable-ldap \
+        --enable-authnz-ldap \
+        --with-ldap-lib=/usr/local/lib \
+        --with-ldap-include=/usr/local/include \
+        --with-ldap \
+        --enable-cache \
+        --enable-disk-cache \
+        --enable-mem-cache \
+        --enable-deflate \
+        --enable-usertrack \
+        --enable-mpm-worker \
+        --enable-cgid \
+        --enable-vhost-alias
+  args:
+    chdir: "{{ apache_source_dir }}{{apache_version}}"
+  become: yes
+
+- name: make 
+  shell: make
+  args:
+    chdir: "{{ apache_source_dir }}{{apache_version}}"
+  become: yes
+
+- name: make install
+  shell: make install
+  args:
+    chdir: "{{ apache_source_dir }}{{apache_version}}"
+  become: yes

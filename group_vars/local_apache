@@ -1,0 +1,29 @@
+---
+vhosts_file:
+    - { template_name: 'stg-point.gmo.jp.conf', copy_name: 'point.gmo.jp.conf' }
+    - { template_name: 'stg-point.gmo.jp_ssl.conf', copy_name: 'point.gmo.jp_ssl.conf' }
+    - { template_name: 'stg-point.gmo.jp_ajp.include', copy_name: 'point.gmo.jp_ajp.include' }
+    - { template_name: 'design-stg-point.gmo.jp.conf', copy_name: 'design-point.gmo.jp.conf' }
+    - { template_name: 'design-stg-point.gmo.jp_ssl.conf', copy_name: 'design-point.gmo.jp_ssl.conf' }
+    - { template_name: 'renewal-stg-point.gmo.jp.conf', copy_name: 'renewal-point.gmo.jp.conf' }
+    - { template_name: 'renewal-stg-point.gmo.jp_ssl.conf', copy_name: 'renewal-point.gmo.jp_ssl.conf' }
+
+gw_file:
+  - { template_name: 'httpd-gw-au.conf', copy_name: 'httpd-gw-au.conf' }
+  - { template_name: 'httpd-gw-docomo.conf', copy_name: 'httpd-gw-docomo.conf' }
+  - { template_name: 'httpd-gw-gmonat.conf', copy_name: 'httpd-gw-gmonat.conf' }
+  - { template_name: 'httpd-gw-media_adsl.conf', copy_name: 'httpd-gw-media_adsl.conf' }
+  - { template_name: 'httpd-gw-softbank.conf', copy_name: 'httpd-gw-softbank.conf' }
+  - { template_name: 'httpd-remote-ua.conf', copy_name: 'httpd-remote-ua.conf' }
+
+extra_file:
+  - { template_name: 'httpd-default.conf', copy_name: 'httpd-default.conf' }
+  - { template_name: 'httpd-info.conf', copy_name: 'httpd-info.conf' }
+  - { template_name: 'httpd-mpm.conf', copy_name: 'httpd-mpm.conf' }
+  - { template_name: 'httpd-vhosts.conf', copy_name: 'httpd-vhosts.conf' }
+
+ssl_file:
+  - { template_name: 'cert.pem', copy_name: 'cert.pem' }
+  - { template_name: 'chain.pem', copy_name: 'chain.pem' }
+  - { template_name: 'fullchain.pem', copy_name: 'fullchain.pem' }
+  - { template_name: 'privkey.pem', copy_name: 'privkey.pem' }

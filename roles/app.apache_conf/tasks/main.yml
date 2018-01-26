@@ -1,0 +1,51 @@
+---
+
+- name: Create document root directory if it doesn't exist
+  file:
+    path: /usr/local/apache2/htdocs/point.gmo.jp/
+    state: directory
+
+- name: Create vhosts config directory if it doesn't exist
+  file:
+    path: /usr/local/apache2/conf/extra/vhosts/
+    state: directory
+
+- name: configure httpd config
+  template: src=conf/extra/vhosts/{{ item.template_name }} dest=/usr/local/apache2/conf/extra/vhosts/{{ item.copy_name }} backup=yes
+  with_items: "{{vhosts_file}}"
+  tags: vhosts
+
+- name: copy httpd.conf
+  template: src=conf/httpd.conf dest=/usr/local/apache2/conf/httpd.conf backup=yes
+  tags: httpd
+
+- name: copy extra config file
+  template: src=conf/extra/{{ item.template_name }} dest=/usr/local/apache2/conf/extra/{{ item.copy_name }} backup=yes
+  with_items: "{{extra_file}}"
+  tags: extra
+
+- name: Create gw config directory if it doesn't exist
+  file:
+    path: /usr/local/apache2/conf/extra/gw/
+    state: directory
+
+- name: copy gw config file
+  template: src=conf/extra/gw/{{ item.template_name }} dest=/usr/local/apache2/conf/extra/gw/{{ item.copy_name }} backup=yes
+  with_items: "{{gw_file}}"
+  tags: gw
+
+- name: Confirm ssl key file exists
+  stat: path=/etc/letsencrypt/live/stg-point.gmo.jp/cert.pem
+  register: sslkey
+
+- name: Create ssl key directory if not exist
+  file:
+    path: /etc/letsencrypt/live/stg-point.gmo.jp/
+    state: directory
+  when: not sslkey.stat.exists
+
+- name: Copy ssl key if not exist
+  template: src=conf/extra/sslkey/{{ item.template_name }} dest=/etc/letsencrypt/live/stg-point.gmo.jp/{{ item.copy_name }} backup=yes
+  with_items: "{{ssl_file}}"
+  tags: ssl
+  when: not sslkey.stat.exists

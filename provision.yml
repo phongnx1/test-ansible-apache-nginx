@@ -1,0 +1,13 @@
+---
+
+- name: install nginx and configure the web local balancing
+  hosts: local_nginx_balancer
+  remote_user: vagrant
+  roles:
+    - jdauphant.nginx
+
+- name: install nginx and configure the web
+  hosts: local_nginx
+  remote_user: vagrant
+  roles:
+    - jdauphant.nginx

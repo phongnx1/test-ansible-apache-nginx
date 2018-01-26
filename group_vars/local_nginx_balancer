@@ -1,0 +1,25 @@
+---
+vhosts_file:
+  - { template_name: 'stg-point.gmo.jp.conf', copy_name: 'point.gmo.jp.conf' }
+  - { template_name: 'stg-point.gmo.jp_ssl.conf', copy_name: 'point.gmo.jp_ssl.conf' }
+  - { template_name: 'stg-point.gmo.jp_ajp.include', copy_name: 'point.gmo.jp_ajp.include' }
+  #- { template_name: 'design-stg-point.gmo.jp.conf', copy_name: 'design-point.gmo.jp.conf' }
+  #- { template_name: 'design-stg-point.gmo.jp_ssl.conf', copy_name: 'design-point.gmo.jp_ssl.conf' }
+  #- { template_name: 'renewal-stg-point.gmo.jp.conf', copy_name: 'renewal-point.gmo.jp.conf' }
+  #- { template_name: 'renewal-stg-point.gmo.jp_ssl.conf', copy_name: 'renewal-point.gmo.jp_ssl.conf' }
+  #- { template_name: 'dev.point.gmo.jp.conf', copy_name: 'dev.point.gmo.jp.conf' }
+  #- { template_name: 'staff.stg-point.gmo.jp.conf', copy_name: 'staff.stg-point.gmo.jp.conf' }
+
+gw_file:
+  - { template_name: 'gmo-ip.conf', copy_name: 'gmo-ip.conf' }
+  - { template_name: 'mobile-ip.conf', copy_name: 'mobile-ip.conf' }
+  - { template_name: 'remote-ip.conf', copy_name: 'remote-ip.conf' }
+
+extra_file:
+  - { template_name: 'load_balancing.conf', copy_name: 'load_balancing.conf' }
+
+ssl_file:
+  - { template_name: 'cert.pem', copy_name: 'cert.pem' }
+  - { template_name: 'chain.pem', copy_name: 'chain.pem' }
+  - { template_name: 'fullchain.pem', copy_name: 'fullchain.pem' }
+  - { template_name: 'privkey.pem', copy_name: 'privkey.pem' }

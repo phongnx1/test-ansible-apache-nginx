@@ -1,0 +1,12 @@
+ansible-playbook -i hosts apache.yml --become
+
+ansible-playbook -i hosts.staging_pnt provision.yml
+
+ansible-playbook -i hosts.staging_pnt apache_ssl.yml --user=oneid
+
+ansible-playbook -i hosts.staging_pnt online_document.yml --user=oneid --become
+ 
+sudo /usr/local/apache2/bin/apachectl stop && sudo /usr/local/apache2/bin/apachectl start
+
+/usr/local/apache2/
+./configure --prefix=/usr/local/apache2/ --enable-so --enable-ssl --enable-rewrite --enable-proxy --enable-headers --enable-ldap-user --enable-ldap-dn --enable-ldap-group

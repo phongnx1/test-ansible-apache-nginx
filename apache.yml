@@ -1,0 +1,9 @@
+---
+
+- name: install and configure the web
+  hosts: local
+  remote_user: vagrant
+
+  roles:
+    - app.apache_install
+    - app.apache_conf

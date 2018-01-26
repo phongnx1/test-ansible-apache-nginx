@@ -1,0 +1,3 @@
+---
+remi_enable_php55: true
+remi_enable_php56: false

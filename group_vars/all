@@ -1,0 +1,5 @@
+
+apache_source_url: https://archive.apache.org/dist/httpd/
+apache_version: httpd-2.2.24
+apache_source_dir: /usr/local/src/
+apache_install_dir: /usr/local/apache2/

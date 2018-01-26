@@ -1,0 +1,40 @@
+# [gmopoint] Tokup api
+location ~ ^/(consumer/app)/.*(.do).* {
+    proxy_pass http://consumer_app;
+}
+
+# [gmopoint] PHP Backyard
+# Affitown API, Affiliate API, Game API
+location ~ ^/backyard(/webinterface/affiaccess|/affitown/reward|/game/|/affiliate/|/ad/|/sendmail/|/enquete/|/gmoid/|/payment/).* {
+    proxy_pass http://affitown;
+}
+
+# [tokup] Backyard
+location ~ ^/backyard/.* {
+    proxy_pass http://backyard;
+}
+
+# [tokup] Payment
+location ~ ^/consumer(/sp|/mobile)?/(payment|quickcharge)/.* {
+    proxy_pass http://payment;
+}
+
+# [tokup] Payment
+location ~ ^/consumer/auth/(securityCheckPasswordComp|securityCheckPassNoComp).do?.* {
+    proxy_pass http://payment;
+}
+
+# [tokup] RankSlot
+location ~ ^/consumer/game/(showRankSlotGameAction|startRankSlotGameAction).do?.* {
+    proxy_pass http://slot;
+}
+
+# [tokup] Mailmagazine Redirect
+location ~ ^/consumer/DynaRedirect.do?.* {
+    proxy_pass http://polaris;
+}
+
+# Staff Tool
+location ~ ^/(staff)/.* {
+    proxy_pass http://staff;
+}

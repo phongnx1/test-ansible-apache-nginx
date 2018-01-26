@@ -1,0 +1,36 @@
+[remi]
+name=Les RPM de remi pour Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
+#baseurl=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/remi/$basearch/
+mirrorlist=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/remi/mirror
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi
+
+[remi-php55]
+name=Les RPM de remi de PHP 5.5 pour Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
+#baseurl=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/php55/$basearch/
+mirrorlist=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/php55/mirror
+# WARNING: If you enable this repository, you must also enable "remi"
+enabled={% if remi_enable_php55 %}1{% else %}0{% endif %}
+
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi
+
+[remi-php56]
+name=Les RPM de remi de PHP 5.6 pour Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
+#baseurl=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/php56/$basearch/
+mirrorlist=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/php56/mirror
+# WARNING: If you enable this repository, you must also enable "remi"
+enabled={% if remi_enable_php56 %}1{% else %}0{% endif %}
+
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi
+
+[remi-test]
+name=Les RPM de remi en test pour Enterprise Linux {{ ansible_distribution_major_version }} - $basearch
+#baseurl=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/test/$basearch/
+mirrorlist=http://rpms.famillecollet.com/enterprise/{{ ansible_distribution_major_version }}/test/mirror
+# WARNING: If you enable this repository, you must also enable "remi"
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi
