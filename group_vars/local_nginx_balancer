@@ -3,10 +3,10 @@ vhosts_file:
   - { template_name: 'stg-point.gmo.jp.conf', copy_name: 'point.gmo.jp.conf' }
   - { template_name: 'stg-point.gmo.jp_ssl.conf', copy_name: 'point.gmo.jp_ssl.conf' }
   - { template_name: 'stg-point.gmo.jp_ajp.include', copy_name: 'point.gmo.jp_ajp.include' }
-  #- { template_name: 'design-stg-point.gmo.jp.conf', copy_name: 'design-point.gmo.jp.conf' }
-  #- { template_name: 'design-stg-point.gmo.jp_ssl.conf', copy_name: 'design-point.gmo.jp_ssl.conf' }
-  #- { template_name: 'renewal-stg-point.gmo.jp.conf', copy_name: 'renewal-point.gmo.jp.conf' }
-  #- { template_name: 'renewal-stg-point.gmo.jp_ssl.conf', copy_name: 'renewal-point.gmo.jp_ssl.conf' }
+  - { template_name: 'design-stg-point.gmo.jp.conf', copy_name: 'design-point.gmo.jp.conf' }
+  - { template_name: 'design-stg-point.gmo.jp_ssl.conf', copy_name: 'design-point.gmo.jp_ssl.conf' }
+  - { template_name: 'renewal-stg-point.gmo.jp.conf', copy_name: 'renewal-point.gmo.jp.conf' }
+  - { template_name: 'renewal-stg-point.gmo.jp_ssl.conf', copy_name: 'renewal-point.gmo.jp_ssl.conf' }
   #- { template_name: 'dev.point.gmo.jp.conf', copy_name: 'dev.point.gmo.jp.conf' }
   #- { template_name: 'staff.stg-point.gmo.jp.conf', copy_name: 'staff.stg-point.gmo.jp.conf' }
 
@@ -23,3 +23,120 @@ ssl_file:
   - { template_name: 'chain.pem', copy_name: 'chain.pem' }
   - { template_name: 'fullchain.pem', copy_name: 'fullchain.pem' }
   - { template_name: 'privkey.pem', copy_name: 'privkey.pem' }
+
+#jdauphant.nginx
+nginx_redhat_pkg:
+  - nginx
+nginx_official_repo: True
+nginx_worker_processes: 1
+nginx_max_clients: 1024
+nginx_worker_rlimit_nofile: 3072
+nginx_remove_sites:
+  - default
+nginx_http_params:
+  - sendfile "off"
+  - tcp_nopush "on"
+  - tcp_nodelay "on"
+  - keepalive_timeout "60"
+  - access_log "{{nginx_log_dir}}/access.log"
+  - error_log "{{nginx_log_dir}}/error.log"
+  - server_tokens off
+  - types_hash_max_size 2048
+  - log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+      '$status $body_bytes_sent "$http_referer" '
+      '"$http_user_agent" "$http_x_forwarded_for"'
+  - add_header X-XSS-Protection "1; mode=block"
+  - add_header X-Content-Type-Options nosniff
+  # ローカル環境は$http_x_forwarded_forが設定されないので$binary_remote_addrを使う
+  - limit_conn_zone $binary_remote_addr zone=addr:10m
+nginx_sites:
+  frontend:
+    - listen 80 default_server
+    - access_log /var/log/nginx/access.log main
+    - server_name  frontend.local
+    - root   /var/www/gmo/frontend/current/frontend/web
+    - error_page 500 501 502 503 504 505 = /maintenance/index.html
+    - set $yii_bootstrap "index.php"
+    - gzip on
+    - gzip_vary on
+    - gzip_proxied any
+    - gzip_types text/css text/javascript application/javascript
+    - gzip_min_length 1000
+    - location = / {
+        index  $yii_bootstrap index.html;
+        try_files $uri $uri/ /$yii_bootstrap?$args;
+        limit_conn addr 5;
+      }
+    - location / {
+        index  $yii_bootstrap index.html;
+        try_files $uri $uri/ /$yii_bootstrap?$args;
+      }
+    - location ~ ^/(protected|framework|themes/\w+/views) {
+        deny  all;
+      }
+    - location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+        try_files $uri =404;
+      }
+    - location ~ \.php$ {
+        fastcgi_split_path_info  ^(.+\.php)(.*)$;
+        set $fsn /$yii_bootstrap;
+        if (-f $document_root$fastcgi_script_name){
+          set $fsn $fastcgi_script_name;
+        }
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fsn;
+        fastcgi_param  PATH_INFO        $fastcgi_path_info;
+        fastcgi_param  PATH_TRANSLATED  $document_root$fsn;
+        fastcgi_param  YII_ENV          dev;
+        fastcgi_param  ORA_CONNECTION_CLASS oneid;
+      }
+    - location ~ /\.ht {
+        deny all;
+        access_log off;
+        log_not_found off;
+      }
+  backend:
+    - listen 80
+    - access_log /var/log/nginx/access.log main
+    - server_name  backend.local
+    - root   /var/www/gmo/backend/current/backend/web
+    - set $yii_bootstrap "index.php"
+    - location / {
+        index  $yii_bootstrap index.html;
+        try_files $uri $uri/ /$yii_bootstrap?$args;
+      }
+    - location ~ ^/(protected|framework|themes/\w+/views) {
+        deny  all;
+      }
+    - location ~ \.(js|css|png|jpg|gif|swf|ico|pdf|mov|fla|zip|rar)$ {
+        try_files $uri =404;
+      }
+    - location ~ \.php$ {
+        fastcgi_split_path_info  ^(.+\.php)(.*)$;
+        set $fsn /$yii_bootstrap;
+        if (-f $document_root$fastcgi_script_name){
+          set $fsn $fastcgi_script_name;
+        }
+        include fastcgi_params;
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fsn;
+        fastcgi_param  PATH_INFO        $fastcgi_path_info;
+        fastcgi_param  PATH_TRANSLATED  $document_root$fsn;
+        fastcgi_param  YII_ENV          dev;
+        fastcgi_param  ORA_CONNECTION_CLASS oneid;
+      }
+    - location ~ /\.ht {
+        deny all;
+        access_log off;
+        log_not_found off;
+      }
+    - auth_basic            "Restricted"
+    - auth_basic_user_file  auth_basic/backend
+nginx_auth_basic_files:
+  backend:
+    - staff:$apr1$titmqAMt$4m32cCxhDtWjxWs90mpXC0
+    - dev:$apr1$DmVEuvVY$xzRnNF2wiZixH6SwZIxzL1
+    - biz:$apr1$.5a9oIVs$GaF1/iIjAM3Vqn4A7LPF70
